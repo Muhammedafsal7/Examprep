@@ -1,1 +1,504 @@
+<<<<<<< HEAD
 
+=======
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exam Tracker</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    background: #080d18;
+    color: #e5e7eb;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    max-width: 950px;
+    margin: auto;
+}
+
+header {
+    text-align: center;
+    padding: 25px 10px;
+}
+
+header h1 {
+    color: #38bdf8;
+    font-size: 32px;
+}
+
+header p {
+    color: #94a3b8;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.stat, .panel, .subject-card {
+    background: #111c30;
+    border: 1px solid #263750;
+    border-radius: 12px;
+    padding: 18px;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat h2 {
+    color: #38bdf8;
+    margin: 5px;
+}
+
+.stat p {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.panel {
+    margin-bottom: 25px;
+}
+
+h2, h3 {
+    color: #38bdf8;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 7px 0 14px;
+    border-radius: 7px;
+    border: 1px solid #334155;
+    background: #080d18;
+    color: white;
+    font-size: 15px;
+}
+
+textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+label {
+    color: #cbd5e1;
+    font-size: 14px;
+}
+
+button {
+    border: none;
+    padding: 11px 16px;
+    margin: 5px 3px;
+    border-radius: 7px;
+    cursor: pointer;
+    background: #0284c7;
+    color: white;
+    font-weight: bold;
+}
+
+button:hover {
+    opacity: 0.85;
+}
+
+.delete {
+    background: #dc2626;
+}
+
+.edit {
+    background: #475569;
+}
+
+.subject-card {
+    margin-bottom: 15px;
+}
+
+.subject-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.subject-header h3 {
+    margin: 5px 0;
+}
+
+.topic {
+    padding: 9px;
+    border-bottom: 1px solid #263750;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.topic input {
+    width: auto;
+    margin: 0;
+    accent-color: #22c55e;
+}
+
+.topic.completed span {
+    text-decoration: line-through;
+    color: #64748b;
+}
+
+.progress-bg {
+    width: 100%;
+    height: 10px;
+    background: #263750;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: #22c55e;
+    transition: width 0.3s;
+}
+
+.small {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.empty {
+    text-align: center;
+    color: #94a3b8;
+    padding: 25px;
+}
+
+footer {
+    text-align: center;
+    color: #64748b;
+    padding: 25px;
+    font-size: 13px;
+}
+
+@media(max-width: 550px) {
+    body {
+        padding: 12px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    header h1 {
+        font-size: 26px;
+    }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+    <h1>📚 EXAM TRACKER</h1>
+    <p>Plan your studies. Track your progress. Prepare smarter.</p>
+</header>
+
+<section class="stats">
+    <div class="stat">
+        <h2 id="totalSubjects">0</h2>
+        <p>Total Subjects</p>
+    </div>
+
+    <div class="stat">
+        <h2 id="totalTopics">0</h2>
+        <p>Total Topics</p>
+    </div>
+
+    <div class="stat">
+        <h2 id="overallProgress">0%</h2>
+        <p>Overall Progress</p>
+    </div>
+</section>
+
+<section class="panel">
+    <h2>➕ Add New Subject</h2>
+
+    <form id="subjectForm">
+        <label>Subject Name</label>
+        <input type="text" id="subjectName"
+               placeholder="e.g. Mathematics" required>
+
+        <label>Exam Date</label>
+        <input type="date" id="examDate" required>
+
+        <label>Syllabus Topics (one topic per line)</label>
+        <textarea id="topics"
+          placeholder="Matrices&#10;Determinants&#10;Eigenvalues"
+          required></textarea>
+
+        <button type="submit">Add Subject</button>
+    </form>
+</section>
+
+<section>
+    <h2>📖 My Subjects</h2>
+    <div id="subjectList"></div>
+</section>
+
+<section class="panel">
+    <h2>📊 Overall Preparation</h2>
+    <div class="progress-bg">
+        <div class="progress-fill" id="overallBar"></div>
+    </div>
+    <p id="progressText" class="small">0% completed</p>
+</section>
+
+<footer>
+    Exam Tracker | Your Personal Study Companion
+    <br><br>
+    All progress is saved automatically on this device.
+</footer>
+
+</div>
+
+<script>
+let subjects = JSON.parse(
+    localStorage.getItem("examTrackerSubjects") || "[]"
+);
+
+const form = document.getElementById("subjectForm");
+
+function saveData() {
+    localStorage.setItem(
+        "examTrackerSubjects",
+        JSON.stringify(subjects)
+    );
+}
+
+function createId() {
+    return Date.now().toString() +
+        Math.random().toString(36).slice(2, 7);
+}
+
+function addText(parent, tag, text, className) {
+    const element = document.createElement(tag);
+    element.textContent = text;
+    if (className) element.className = className;
+    parent.appendChild(element);
+    return element;
+}
+
+form.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const name = document.getElementById("subjectName").value.trim();
+    const date = document.getElementById("examDate").value;
+    const topicText = document.getElementById("topics").value;
+
+    const topics = topicText.split("\n")
+        .map(topic => topic.trim())
+        .filter(topic => topic.length > 0)
+        .map(topic => ({
+            id: createId(),
+            name: topic,
+            done: false
+        }));
+
+    if (!name || !date || topics.length === 0) {
+        alert("Please enter all details and at least one topic.");
+        return;
+    }
+
+    subjects.push({
+        id: createId(),
+        name: name,
+        date: date,
+        topics: topics
+    });
+
+    saveData();
+    form.reset();
+    render();
+});
+
+function getDaysLeft(date) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const exam = new Date(date + "T00:00:00");
+    return Math.ceil((exam - today) / 86400000);
+}
+
+function render() {
+    const list = document.getElementById("subjectList");
+    list.replaceChildren();
+
+    let totalTopics = 0;
+    let completedTopics = 0;
+
+    subjects.forEach(subject => {
+        totalTopics += subject.topics.length;
+        completedTopics += subject.topics.filter(
+            topic => topic.done
+        ).length;
+    });
+
+    const percentage = totalTopics
+        ? Math.round(completedTopics / totalTopics * 100)
+        : 0;
+
+    document.getElementById("totalSubjects").textContent =
+        subjects.length;
+
+    document.getElementById("totalTopics").textContent =
+        totalTopics;
+
+    document.getElementById("overallProgress").textContent =
+        percentage + "%";
+
+    document.getElementById("overallBar").style.width =
+        percentage + "%";
+
+    document.getElementById("progressText").textContent =
+        completedTopics + " of " + totalTopics +
+        " topics completed (" + percentage + "%)";
+
+    if (subjects.length === 0) {
+        addText(list, "p",
+            "No subjects added yet. Start by adding your first subject!",
+            "empty");
+        return;
+    }
+
+    subjects.forEach(subject => {
+        const card = document.createElement("div");
+        card.className = "subject-card";
+
+        const header = document.createElement("div");
+        header.className = "subject-header";
+
+        const title = document.createElement("h3");
+        title.textContent = "📘 " + subject.name;
+        header.appendChild(title);
+
+        const days = getDaysLeft(subject.date);
+        const countdown = days > 0
+            ? days + " days left"
+            : days === 0
+                ? "Exam is today!"
+                : "Exam date has passed";
+
+        addText(card, "p",
+            "📅 Exam: " + subject.date +
+            " | ⏳ " + countdown, "small");
+
+        const done = subject.topics.filter(t => t.done).length;
+        const total = subject.topics.length;
+        const progress = total
+            ? Math.round(done / total * 100)
+            : 0;
+
+        card.appendChild(header);
+
+        const bar = document.createElement("div");
+        bar.className = "progress-bg";
+
+        const fill = document.createElement("div");
+        fill.className = "progress-fill";
+        fill.style.width = progress + "%";
+
+        bar.appendChild(fill);
+        card.appendChild(bar);
+
+        addText(card, "p",
+            progress + "% completed (" + done + "/" + total + ")",
+            "small");
+
+        subject.topics.forEach(topic => {
+            const row = document.createElement("label");
+            row.className = "topic" +
+                (topic.done ? " completed" : "");
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.checked = topic.done;
+
+            checkbox.addEventListener("change", function() {
+                topic.done = checkbox.checked;
+                saveData();
+                render();
+            });
+
+            const text = document.createElement("span");
+            text.textContent = topic.name;
+
+            row.appendChild(checkbox);
+            row.appendChild(text);
+            card.appendChild(row);
+        });
+
+        const editButton = document.createElement("button");
+        editButton.className = "edit";
+        editButton.textContent = "Edit";
+        editButton.addEventListener("click", () => editSubject(subject.id));
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "delete";
+        deleteButton.textContent = "Delete";
+        deleteButton.addEventListener("click", () => deleteSubject(subject.id));
+
+        card.appendChild(editButton);
+        card.appendChild(deleteButton);
+        list.appendChild(card);
+    });
+}
+
+function editSubject(id) {
+    const subject = subjects.find(s => s.id === id);
+    if (!subject) return;
+
+    const name = prompt("Enter subject name:", subject.name);
+    if (name === null) return;
+
+    const date = prompt("Enter exam date (YYYY-MM-DD):", subject.date);
+    if (date === null) return;
+
+    if (!name.trim() || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        alert("Please enter a valid name and date.");
+        return;
+    }
+
+    subject.name = name.trim();
+    subject.date = date;
+
+    saveData();
+    render();
+}
+
+function deleteSubject(id) {
+    if (!confirm("Are you sure you want to delete this subject?")) {
+        return;
+    }
+
+    subjects = subjects.filter(s => s.id !== id);
+    saveData();
+    render();
+}
+
+render();
+</script>
+
+</body>
+</html>
+>>>>>>> 9ed54db9981904682a29e39a1eb1a5c47f7e72db
